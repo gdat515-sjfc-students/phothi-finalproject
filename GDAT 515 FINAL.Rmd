@@ -1,0 +1,86 @@
+---
+title: "GDAT 515 Final Project"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+
+c("tidyverse",
+  "ggthemes",
+  "dplyr",
+  "flexdashboard",
+  "ggplot2",
+  "plotly"
+  ) -> package_names  
+for(package_name in package_names) {
+  if(!is.element(package_name, installed.packages()[,1])) {
+     install.packages(package_name,
+                      repos = "http://cran.mtu.edu/")
+  }
+  library(package_name, character.only=TRUE,
+          quietly=TRUE,verbose=FALSE)
+}
+
+read.csv("C:/Users/pavan/Documents/GDAT/phothi-finalproject/US Unemployment Data.csv") -> unemployment
+str(unemployment)
+
+```
+
+Row {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+
+unemp <- ggplot(data = unemployment, mapping = aes(x = year, y = population, color = unemployed_percent)) +
+  scale_colour_gradient(low = "green", high = "red") +
+  geom_point() +
+  geom_smooth(colour = "black", size = 0.125) +
+  labs(title = "U.S. Unemployment Rate: 1941-2010", x = "Year", y = "Population (In Thousands") +
+  theme_bw() 
+unemp + annotate("text", x = 1957, y = 160000, label = "Recession of 1973-1975") -> unemp2
+unemp2 + annotate("text", x = 1964, y = 175000, label = "Recession of 1981-1982") -> unemp3
+unemp3 + annotate("text", x = 1974, y = 195000, label = "Recession of 1990-1992") -> unemp4
+unemp4 + annotate("text", x = 1990, y = 240000, label = "Recession of 2007-2009") -> unemp5
+unemp5 + labs(colour = "Percent Unemployed")
+
+
+```
+
+### Chart B
+
+```{r}
+
+  plot_ly(data = unemployment, x = ~year) %>%
+  add_trace(y = ~population, name = "Civilian Noninstitutional Population", mode = 'lines+marker') %>%
+  add_trace(y = ~employed_total, name = "Employed", mode = 'lines+marker') %>%
+  add_trace(y = ~unemployed, name = "Unemployed", mode = 'lines+marker') %>%
+  layout(xaxis = list(ticks = "Outside", 
+                      dtick = 10, 
+                      ticklen = 5,
+                      tickwidth = 2,
+                      title = "Year",
+                      showgrid = FALSE, 
+                      zeroline = FALSE),
+yaxis = list(ticks = "Outside", 
+                      dtick = 5, 
+                      ticklen = 10, 
+                      tickwidth = 1,
+                      title = "Population (In Thousands)",
+                      showgrid = FALSE, 
+                      zeroline = FALSE),
+      showlegend = TRUE,
+legend = list(x = .15, y = .95), 
+title = "U.S. Employment: 1941-2010")
+
+
+```
+
+
+
+
+
